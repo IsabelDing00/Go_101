@@ -1,0 +1,155 @@
+file: main.go
+code:
+------------------------------
+package main
+
+import "fmt"
+
+func main() {
+	fmt.Println("Hi there!")
+}
+------------------------------
+1. How do we run the code in our project?
+  Go to the location of the file in terminal and then "go run main.go", enter.
+  Go command line interface:
+        go build: just compile
+        go run: compile and execute 
+        go fmt
+        go install
+        go get
+        go test
+
+2. What does "package main" mean?
+    Execute type: "package main"
+        generate a file that we can run, must have a func called 'main'
+
+    Reusable type: "package calculator"
+        like library
+
+3. What does 'import "fmt"' mean?
+    fmt is one of the standard library packages in Go.
+    Check https://golang.org/pkg for more SLPs.
+
+4. What is that  'func' thing?
+    syntax: func main() {
+
+            }
+
+
+5. How is the main.go file organized?
+    package main    -> package declaration
+    import "fmt"    -> import other packages that we need
+    func main() {   -> body
+        fmt.Println("Hi there.")
+    }    
+
+6. Dynamic Type language: JavaScript, Python, Ruby
+        eg: var number = "123"
+   Static Type language: C++, Go, Java  
+        eg: var number string = "123"  
+
+7. var card string = "Ace of Spades"   -> has to put a data type
+   var card := "Ace of Spades"         -> important, the := is for initialization, 
+                                            so later I can asgin my card with other string value with just "="
+
+8. Array: Fixed length, same type
+   Slice: An Array that can grow or shrink, same type
+   Slice example with simple for loop:
+        cards := []string{"Ace of Diamonds",newCard()}   -> Create a slice
+        cards = append(cards, "Six of Spades")           -> add "Six of Spades" to the slice, this will create a new slice and then assign back to the variable of cards
+        for i, card := range cards {                     -> if we don't need i, we can change it to _, so compiler won't complain
+		fmt.Println(i, card)
+	}
+
+9. Type declaration
+    In deck.go file:
+        type deck []string
+
+    In main.go file: change the []string to deck, so I am able to extend my card as a deck which is a slice of string
+        cards := deck{"Ace of Diamonds",newCard()}
+    
+    In terminal, must compile and execute two files -> go run main.go deck.go
+
+10. Receiver Functions
+    func (d deck) print() {      -> every variable of type "deck" can call this function on itself
+	    for i, card := range d {
+		    fmt.Println(i, card)
+	    }
+    }
+
+    ** Receiver function will be called as: cards.print()
+
+11. Slice range syntax
+    li[startIndexIncluding:upToNotIncluding]
+
+12. Function with return sth.
+    func newDeck() deck {    -> the deck here indicates the returen type, a deck
+        cards := deck{}
+
+        cardSuits := []string{"Spades", "Diamonds", "Hearts", "Clarks"}
+        cardValues := []string{"Ace", "Two", "Three", "Four"}
+
+        for _, suit := range cardSuits {
+            for _, value := range cardValues {
+                cards = append(cards, value+" of "+suit)
+            }
+        }
+
+        return cards
+    }
+
+    - Function with 2 return values, indicates that this deal() function will return two decks so (deck, deck)
+    func deal(d deck, handsize int) (deck, deck) {
+        return d[:handsize], d[handsize:]
+    }
+
+    ** compare with receiver function, this type of function will be called as: 
+                                                                            cards := newDeck()
+                                                                            deal(cards, 5)
+
+13. ioutil -> func WriteFile
+    func WriteFile(filename string, data []byte, perm os.FileMode) error
+
+14. Byte Slice: eg. string to byte slice by using ASCII
+    Type Conversion:  []byte("value we have")
+            greeting := "Hi there!"
+            fmt.Println(greeting)
+        -> result: [72 105 32 116 104 101 114 101 33]
+
+15. ioutil WriteFile
+    0666 is a permission code which indicates everyone can do it
+    func (d deck) saveToFile(filename string) error {
+        return ioutil.WriteFile(filename, []byte(d.toString()), 0666)
+    }
+
+16. ioutil ReadFile   will return ([]byte, error)
+    byteSlice, err := ioutil.ReadFile(filename)
+    err: value of type error, if nothing went wrong, it will have a value of "nil", no value
+
+17. os func.Exit(code int)
+    Exit causes the current program to exit with the given status code. code zero indicates success, non-zero an error.
+    eg. os.Exit(1)
+
+    os.Remove()    
+    func Remove(name string) error
+
+18. math/rand -> To get a random number. eg. rand.Intn() 
+
+19. Testing in Go: import "testing"
+    create a new file ending in _test.go
+    and run all tests in a package, run the command: go test
+
+    eg.
+    func TestNewDeck(t *testing.T) {    -> the t here is the testing handler
+
+    } 
+
+    error I had: enter go test and the stepped over "go: go.mod file not found in current directory or any parent directory; see 'go help modules'"
+    Go to the terminal and then type: go env -w GO111MODULE=auto
+
+    ----------
+    For testing, remember to clean up.
+
+
+
+20. Go for printing: https://pkg.go.dev/fmt#hdr-Printing
